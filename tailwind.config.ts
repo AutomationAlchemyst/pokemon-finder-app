@@ -1,6 +1,6 @@
 import type { Config } from 'tailwindcss'
-// This is the line we are fixing. Note the absence of curly braces around fontFamily.
-import fontFamily from 'tailwindcss/defaultTheme'
+// FIX 1: Import the entire 'defaultTheme' object
+import defaultTheme from 'tailwindcss/defaultTheme'
 
 const config: Config = {
   content: [
@@ -11,7 +11,8 @@ const config: Config = {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['Poppins', ...fontFamily.sans],
+        // FIX 2: Access the default fonts via 'defaultTheme.fontFamily.sans'
+        sans: ['Poppins', ...defaultTheme.fontFamily.sans],
       },
       colors: {
         'brand-dark': '#0D1117',
