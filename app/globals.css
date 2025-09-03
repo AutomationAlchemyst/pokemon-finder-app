@@ -7,8 +7,8 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-start; /* Align content to the top */
-  padding: 1rem; /* Reduced padding for mobile first */
+  justify-content: flex-start;
+  padding: 1rem;
   min-height: 100vh;
 }
 
@@ -19,7 +19,7 @@ main {
 }
 
 h1 {
-  font-size: 2.5rem; /* Slightly smaller base size */
+  font-size: 2.5rem;
   font-weight: 700;
   margin-bottom: 0.5rem;
 }
@@ -31,7 +31,7 @@ p {
 
 .compare-form {
   display: grid;
-  grid-template-columns: 1fr; /* Default to a single column for mobile */
+  grid-template-columns: 1fr;
   gap: 0.5rem;
   margin-bottom: 2rem;
 }
@@ -69,23 +69,31 @@ p {
     padding: 1rem;
 }
 
+/* --- CHANGED SECTION FOR HORIZONTAL SCROLL --- */
 .battle-container {
   display: flex;
-  flex-direction: column; /* Default to a vertical stack for mobile */
-  align-items: center;
-  gap: 1.5rem;
+  flex-direction: row; /* Always horizontal now */
+  gap: 1rem;
   margin-top: 2rem;
+  width: 100%; /* Take up the full width of the main container */
+  overflow-x: auto; /* This is the key: allow horizontal scrolling */
+  padding-bottom: 1rem; /* Add some padding for the scrollbar */
 }
 
-.pokemon-column, .vs-divider {
-  width: 100%; /* Default to full width for mobile */
+.pokemon-column {
+  min-width: 250px; /* Give each column a minimum width to prevent squishing */
+  width: 40%;
 }
 
 .vs-divider {
-  padding-top: 0; /* Remove top padding for mobile */
+  min-width: 120px; /* Give the center column a minimum width */
+  width: 20%;
+  padding-top: 4rem;
   font-weight: 600;
   color: #8b949e;
 }
+/* --- END OF CHANGED SECTION --- */
+
 
 .vs-divider h3 {
     margin-bottom: 1rem;
@@ -102,7 +110,7 @@ p {
 }
 
 .pokemon-card h2 {
-  font-size: 2rem;
+  font-size: 1.8rem; /* Slightly smaller to fit mobile better */
   font-weight: 600;
   text-transform: capitalize;
   margin-top: 1rem;
@@ -186,32 +194,26 @@ footer a:hover {
 }
 
 /* --- Media Query for Larger Screens (Desktop) --- */
+/* We can now simplify or remove the desktop overrides for the battle container */
 @media (min-width: 768px) {
   body {
-    padding: 2rem; /* Restore larger padding on desktop */
+    padding: 2rem;
   }
 
   h1 {
-    font-size: 3rem; /* Restore larger heading on desktop */
+    font-size: 3rem;
   }
 
   .compare-form {
-    grid-template-columns: 1fr 1fr; /* Two columns for inputs on desktop */
+    grid-template-columns: 1fr 1fr;
   }
 
   .battle-container {
-    flex-direction: row; /* Switch to horizontal layout on desktop */
-    align-items: flex-start;
-    gap: 1rem;
+    justify-content: space-between; /* Center it nicely on desktop */
   }
 
-  .pokemon-column {
-    width: 40%;
-  }
-
-  .vs-divider {
-    width: 20%;
-    padding-top: 4rem; /* Restore padding on desktop */
+  .pokemon-card h2 {
+    font-size: 2rem; /* Restore larger name on desktop */
   }
 }
 
