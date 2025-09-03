@@ -1,14 +1,10 @@
 import { NextResponse } from 'next/server';
 
-// We will use the 'request' object but ignore the 'context' object
-export async function GET(request: Request, context: { params: { name: string } }) {
-
-  // --- NEW APPROACH ---
-  // We will no longer use context.params.name
-  // Instead, we manually parse the name from the request URL.
+// Renamed 'context' to '_context' to signal it's unused
+export async function GET(request: Request, _context: { params: { name: string } }) {
   const url = new URL(request.url);
   const pathParts = url.pathname.split('/');
-  const name = pathParts[pathParts.length - 1]; // The name is the last part of the URL path
+  const name = pathParts[pathParts.length - 1];
 
   if (!name) {
     return NextResponse.json({ error: 'Could not determine Pokémon name from URL' }, { status: 400 });
@@ -16,13 +12,10 @@ export async function GET(request: Request, context: { params: { name: string } 
 
   try {
     const apiResponse = await fetch(`https://pokeapi.co/api/v2/pokemon/${name}`);
-
     if (!apiResponse.ok) {
       return NextResponse.json({ error: 'Pokémon not found. Please check the spelling.' }, { status: 404 });
     }
-
     const data = await apiResponse.json();
-    
     const responseData = {
       name: data.name,
       id: data.id,
@@ -33,10 +26,8 @@ export async function GET(request: Request, context: { params: { name: string } 
       abilities: data.abilities,
       stats: data.stats,
     };
-
     return NextResponse.json(responseData);
-
-  } catch (error) {
+  } catch (_error) { // Renamed 'error' to '_error' to signal it's unused
     return NextResponse.json({ error: 'Failed to fetch data from the Pokémon API' }, { status: 500 });
   }
 }
