@@ -1,7 +1,9 @@
 import { NextResponse } from 'next/server';
 
-// Renamed 'context' to '_context' to signal it's unused
-export async function GET(request: Request, _context: { params: { name: string } }) {
+// The function signature is now simplified to only accept 'request'.
+// We have removed the second 'context' argument completely.
+export async function GET(request: Request) {
+  
   const url = new URL(request.url);
   const pathParts = url.pathname.split('/');
   const name = pathParts[pathParts.length - 1];
@@ -12,10 +14,13 @@ export async function GET(request: Request, _context: { params: { name: string }
 
   try {
     const apiResponse = await fetch(`https://pokeapi.co/api/v2/pokemon/${name}`);
+
     if (!apiResponse.ok) {
       return NextResponse.json({ error: 'Pokémon not found. Please check the spelling.' }, { status: 404 });
     }
+
     const data = await apiResponse.json();
+    
     const responseData = {
       name: data.name,
       id: data.id,
@@ -26,8 +31,10 @@ export async function GET(request: Request, _context: { params: { name: string }
       abilities: data.abilities,
       stats: data.stats,
     };
+
     return NextResponse.json(responseData);
-  } catch (_error) { // Renamed 'error' to '_error' to signal it's unused
+
+  } catch (_error) { // The error variable is unused, so we prefix with '_'
     return NextResponse.json({ error: 'Failed to fetch data from the Pokémon API' }, { status: 500 });
   }
 }
