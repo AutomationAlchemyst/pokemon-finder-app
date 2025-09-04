@@ -287,3 +287,16 @@ footer a:hover {
   color: white;
   border-color: #8b949e;
 }
+
+/* --- Add these new styles to the bottom of your globals.css file --- */
+
+.card-price-section {
+  text-align: left;
+  margin-top: 1.5rem;
+}
+
+.card-price {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #2ea043; /* Green to match the other accent colors */
+}
