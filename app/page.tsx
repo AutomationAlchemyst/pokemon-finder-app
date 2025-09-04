@@ -29,7 +29,7 @@ const PokemonCard = ({ data, price }: { data: PokemonData, price: string | null 
     {/* New section to display the price if it exists */}
     {price && (
       <div className="card-price-section">
-        <h3>Market Price</h3>
+        <h3>Global Card Market Price (USD)</h3>
         <p className="card-price">{price}</p>
       </div>
     )}
