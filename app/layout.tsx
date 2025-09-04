@@ -19,7 +19,7 @@ export default function RootLayout({
         {/* Add your footer here */}
         <footer>
           <p>
-            Designed by Ath Thaariq Marthas For Zayd Imran. WorkFlowGuysLLP.  
+            Designed by Ath Thaariq Marthas. Inspired by Zayd Imran. WorkFlowGuysLLP.  
             <a href="https://theworkflowguys.com" target="_blank" rel="noopener noreferrer">
               theworkflowguys.com
             </a>
