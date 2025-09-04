@@ -39,13 +39,6 @@ p {
   margin-bottom: 1rem;
 }
 
-.compare-form .autocomplete-container:nth-child(1) {
-  border: 4px solid blue;
-}
-
-.compare-form .autocomplete-container:nth-child(2) {
-  border: 4px solid yellow;
-}
 .compare-form input {
   width: 100%;
   padding: 0.75rem 1rem;
@@ -54,6 +47,9 @@ p {
   border-radius: 6px;
   color: #c9d1d9;
   font-size: 1rem;
+
+  /* --- Add this line --- */
+  box-sizing: border-box;
 }
 
 .compare-form button {
