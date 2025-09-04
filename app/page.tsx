@@ -2,6 +2,7 @@
 
 import { useState, useEffect, FormEvent } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 
 type PokemonData = {
   name: string;
