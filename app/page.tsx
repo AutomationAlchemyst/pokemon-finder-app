@@ -143,6 +143,8 @@ export default function HomePage() {
   return (
     <main>
       <h1>Pokémon Battle</h1>
+      <Link href="/pokedex" className="pokedex-link">View Full Pokédex →</Link>
+      
       <p>Enter two Pokémon to see how they stack up head-to-head.</p>
       <form onSubmit={handleCompare} className="compare-form">
         <input type="text" value={pokemonOneName} onChange={(e) => setPokemonOneName(e.target.value)} placeholder="e.g., Charizard"/>
