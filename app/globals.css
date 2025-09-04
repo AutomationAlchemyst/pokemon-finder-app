@@ -217,3 +217,23 @@ footer a:hover {
   }
 }
 
+/* --- Add these new styles to your globals.css file --- */
+
+.tip-button {
+  display: inline-block;
+  margin-top: 1rem;
+  padding: 0.5rem 1rem;
+  background-color: transparent;
+  color: #8b949e; /* Dimmed text color */
+  border: 1px solid #30363D; /* Subtle border */
+  border-radius: 6px;
+  font-size: 0.9rem;
+  text-decoration: none;
+  transition: all 0.2s ease-in-out;
+}
+
+.tip-button:hover {
+  background-color: #161B22;
+  color: white;
+  border-color: #8b949e;
+}

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, FormEvent } from 'react';
-import Image from 'next/image'; // Import the Next.js Image component
+import Image from 'next/image';
 
 type PokemonData = {
   name: string;
@@ -12,7 +12,6 @@ type PokemonData = {
   stats: { stat: { name: string }, base_stat: number }[];
 };
 
-// Updated to use the <Image /> component
 const PokemonCard = ({ data }: { data: PokemonData }) => (
   <div className="pokemon-card">
     <Image src={data.imageUrl} alt={data.name} width="160" height="160" style={{ margin: '0 auto' }} />
@@ -60,7 +59,7 @@ export default function HomePage() {
       }));
       setPokemonOneData(data[0]);
       setPokemonTwoData(data[1]);
-    } catch (err) { // This is the critical fix: changed from 'err: any'
+    } catch (err) {
       if (err instanceof Error) {
         setError(err.message);
       } else {
@@ -99,6 +98,17 @@ export default function HomePage() {
           <input type="text" value={pokemonTwoName} onChange={(e) => setPokemonTwoName(e.target.value)} placeholder="e.g., Blastoise"/>
           <button type="submit" disabled={isLoading}>{isLoading ? 'Comparing...' : 'Compare!'}</button>
         </form>
+
+        {/* --- ADD THE TIP BUTTON HERE --- */}
+        <a 
+          href="https://buy.stripe.com/00wbJ0bbc4YP6zDfpkgYU00" 
+          target="_blank" 
+          rel="noopener noreferrer" 
+          className="tip-button"
+        >
+          If you like this, please leave a tip 💖
+        </a>
+        
         {error && <p className="error-message" style={{marginTop: '2rem'}}>{error}</p>}
         {pokemonOneData && pokemonTwoData && (
           <div className="battle-container">
