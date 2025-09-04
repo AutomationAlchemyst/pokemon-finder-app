@@ -358,3 +358,53 @@ footer a:hover {
 .pokedex-link:hover {
   text-decoration: underline;
 }
+
+/* --- Add these new styles for the skeleton loader --- */
+
+.skeleton {
+  background-color: #30363D;
+  border-radius: 4px;
+  animation: shimmer 1.5s infinite linear;
+  background-image: linear-gradient(90deg, #30363D 0%, #444a52 50%, #30363D 100%);
+  background-size: 200% 100%;
+}
+
+.skeleton-card {
+  background-color: #161B22; /* Match the real card background */
+}
+
+.skeleton-image {
+  width: 160px;
+  height: 160px;
+  border-radius: 50%; /* Make it a circle */
+  margin: 0 auto;
+}
+
+.skeleton-title {
+  width: 70%;
+  height: 2rem;
+  margin: 1rem auto 0.5rem auto;
+}
+
+.skeleton-text {
+  width: 20%;
+  height: 1rem;
+  margin: 0 auto;
+}
+
+.skeleton-subtitle {
+  width: 50%;
+  height: 1.2rem;
+  margin-bottom: 0.75rem;
+}
+
+.skeleton-line {
+  width: 90%;
+  height: 0.8rem;
+  margin-bottom: 0.5rem;
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
