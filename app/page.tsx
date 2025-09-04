@@ -1,10 +1,9 @@
 "use client";
 
-import { useState, FormEvent } from 'react';
+import { useState, useEffect, FormEvent } from 'react';
 import Image from 'next/image';
-import { PokemonCardSkeleton } from './components/PokemonCardSkeleton'; // Import the new skeleton component
+import { PokemonCardSkeleton } from './components/PokemonCardSkeleton';
 
-// Define the shape of our Pokémon data
 type PokemonData = {
   name: string;
   id: number;
@@ -14,7 +13,12 @@ type PokemonData = {
   stats: { stat: { name: string }, base_stat: number }[];
 };
 
-// This component renders the card once data is loaded
+// A new type for the Pokédex list
+type PokedexEntry = {
+  name: string;
+  url: string;
+};
+
 const PokemonCard = ({ data }: { data: PokemonData }) => (
   <div className="pokemon-card">
     <Image src={data.imageUrl} alt={data.name} width="160" height="160" style={{ margin: '0 auto' }} />
@@ -31,9 +35,7 @@ const PokemonCard = ({ data }: { data: PokemonData }) => (
   </div>
 );
 
-// This is the main page component
 export default function HomePage() {
-  // State variables to manage the app's data and UI
   const [pokemonOneName, setPokemonOneName] = useState('');
   const [pokemonTwoName, setPokemonTwoName] = useState('');
   const [pokemonOneData, setPokemonOneData] = useState<PokemonData | null>(null);
@@ -42,27 +44,70 @@ export default function HomePage() {
   const [error, setError] = useState<string | null>(null);
   const [battleResult, setBattleResult] = useState<string | null>(null);
 
-  // Main function to handle the comparison
+  // --- AUTOCOMPLETE STATE ---
+  const [allPokemon, setAllPokemon] = useState<PokedexEntry[]>([]);
+  const [suggestionsOne, setSuggestionsOne] = useState<PokedexEntry[]>([]);
+  const [suggestionsTwo, setSuggestionsTwo] = useState<PokedexEntry[]>([]);
+  
+  // Fetch the full Pokédex list on page load
+  useEffect(() => {
+    const fetchAllPokemon = async () => {
+      try {
+        const response = await fetch('/api/pokedex');
+        const data = await response.json();
+        setAllPokemon(data);
+      } catch (err) {
+        console.error("Failed to load Pokédex for autocomplete:", err);
+      }
+    };
+    fetchAllPokemon();
+  }, []);
+
+  // --- AUTOCOMPLETE HANDLERS ---
+  const handleInputChange = (value: string, inputNumber: 1 | 2) => {
+    if (inputNumber === 1) {
+      setPokemonOneName(value);
+      if (value.length > 1) {
+        const filtered = allPokemon.filter(p => p.name.toLowerCase().startsWith(value.toLowerCase())).slice(0, 5);
+        setSuggestionsOne(filtered);
+      } else {
+        setSuggestionsOne([]);
+      }
+    } else {
+      setPokemonTwoName(value);
+      if (value.length > 1) {
+        const filtered = allPokemon.filter(p => p.name.toLowerCase().startsWith(value.toLowerCase())).slice(0, 5);
+        setSuggestionsTwo(filtered);
+      } else {
+        setSuggestionsTwo([]);
+      }
+    }
+  };
+
+  const handleSuggestionClick = (name: string, inputNumber: 1 | 2) => {
+    if (inputNumber === 1) {
+      setPokemonOneName(name);
+      setSuggestionsOne([]);
+    } else {
+      setPokemonTwoName(name);
+      setSuggestionsTwo([]);
+    }
+  };
+
   const handleCompare = async (e: FormEvent) => {
+    // ... (rest of this function is unchanged)
     e.preventDefault();
     if (!pokemonOneName || !pokemonTwoName) {
       setError("Please enter a name for both Pokémon.");
       return;
     }
-    
-    // Reset the state and start loading
     setIsLoading(true);
     setPokemonOneData(null);
     setPokemonTwoData(null);
     setError(null);
     setBattleResult(null);
-
-    // I've added a small delay here so you can clearly see the skeleton effect in action.
-    // You can remove this line in the final version if you want.
-    await new Promise(resolve => setTimeout(resolve, 1000)); 
-
+    await new Promise(resolve => setTimeout(resolve, 1000));
     try {
-      // Fetch data for both Pokémon simultaneously
       const responses = await Promise.all([
         fetch(`/api/pokemon/${pokemonOneName.toLowerCase()}`),
         fetch(`/api/pokemon/${pokemonTwoName.toLowerCase()}`)
@@ -71,39 +116,29 @@ export default function HomePage() {
         if (!res.ok) throw new Error(`Could not find one of the Pokémon. Please check the names.`);
         return res.json();
       }));
-      
-      // Store the data
       setPokemonOneData(data[0]);
       setPokemonTwoData(data[1]);
-
-      // Calculate the battle score
       let score1 = 0;
       let score2 = 0;
       data[0].stats.forEach((stat: { base_stat: number }, index: number) => {
-        if (stat.base_stat > data[1].stats[index].base_stat) {
-          score1++;
-        } else if (data[1].stats[index].base_stat > stat.base_stat) {
-          score2++;
-        }
+        if (stat.base_stat > data[1].stats[index].base_stat) score1++;
+        else if (data[1].stats[index].base_stat > stat.base_stat) score2++;
       });
-
-      // Determine the result text
       let resultText = '';
       if (score1 > score2) resultText = `${data[0].name} wins ${score1} - ${score2}!`;
       else if (score2 > score1) resultText = `${data[1].name} wins ${score2} - ${score1}!`;
       else resultText = `It's a draw ${score1} - ${score1}!`;
       setBattleResult(resultText);
-
     } catch (err) {
       if (err instanceof Error) setError(err.message);
       else setError("An unknown error occurred.");
     } finally {
-      setIsLoading(false); // Stop loading, regardless of success or error
+      setIsLoading(false);
     }
   };
-
-  // Helper function to render the stat comparison rows
+  
   const renderComparisonStats = (p1: PokemonData, p2: PokemonData) => {
+    // ... (unchanged)
     return p1.stats.map((stat, index) => {
       const p1Stat = stat.base_stat;
       const p2Stat = p2.stats[index].base_stat;
@@ -122,46 +157,74 @@ export default function HomePage() {
     });
   };
 
-  // The JSX that renders the page
   return (
     <main>
       <h1>Pokémon Battle</h1>
         <form onSubmit={handleCompare} className="compare-form">
-          <input type="text" value={pokemonOneName} onChange={(e) => setPokemonOneName(e.target.value)} placeholder="e.g., Charizard"/>
-          <input type="text" value={pokemonTwoName} onChange={(e) => setPokemonTwoName(e.target.value)} placeholder="e.g., Blastoise"/>
+          {/* --- UPDATED INPUT 1 --- */}
+          <div className="autocomplete-container">
+            <input
+              type="text"
+              value={pokemonOneName}
+              onChange={(e) => handleInputChange(e.target.value, 1)}
+              placeholder="e.g., Charizard"
+            />
+            {suggestionsOne.length > 0 && (
+              <ul className="suggestions-list">
+                {suggestionsOne.map(p => (
+                  <li key={p.name} onClick={() => handleSuggestionClick(p.name, 1)}>
+                    {p.name}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+          {/* --- UPDATED INPUT 2 --- */}
+          <div className="autocomplete-container">
+            <input
+              type="text"
+              value={pokemonTwoName}
+              onChange={(e) => handleInputChange(e.target.value, 2)}
+              placeholder="e.g., Blastoise"
+            />
+            {suggestionsTwo.length > 0 && (
+              <ul className="suggestions-list">
+                {suggestionsTwo.map(p => (
+                  <li key={p.name} onClick={() => handleSuggestionClick(p.name, 2)}>
+                    {p.name}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
           <button type="submit" disabled={isLoading}>{isLoading ? 'Comparing...' : 'Compare!'}</button>
         </form>
         <a href="https://buy.stripe.com/00wbJ0bbc4YP6zDfpkgYU00" target="_blank" rel="noopener noreferrer" className="tip-button">
           If you like this, please leave a tip 💖
         </a>
-
-      {error && <p className="error-message" style={{marginTop: '2rem'}}>{error}</p>}
-
-      {/* This is the key logic: show skeletons while loading, otherwise show the results */}
-      {isLoading ? (
-        <div className="battle-container">
-          <div className="pokemon-column"><PokemonCardSkeleton /></div>
-          <div className="vs-divider">
-            {/* We don't show stats or results while loading */}
+        {error && <p className="error-message" style={{marginTop: '2rem'}}>{error}</p>}
+        {isLoading ? (
+          <div className="battle-container">
+            <div className="pokemon-column"><PokemonCardSkeleton /></div>
+            <div className="vs-divider"></div>
+            <div className="pokemon-column"><PokemonCardSkeleton /></div>
           </div>
-          <div className="pokemon-column"><PokemonCardSkeleton /></div>
-        </div>
-      ) : pokemonOneData && pokemonTwoData && (
-        <div className="battle-container">
-          <div className="pokemon-column"><PokemonCard data={pokemonOneData} /></div>
-          <div className="vs-divider">
-            {battleResult && (
-              <div className="battle-result">
-                <h3>Result</h3>
-                <p>{battleResult}</p>
-              </div>
-            )}
-            <h3>Base Stats</h3>
-            <div className="stats-comparison">{renderComparisonStats(pokemonOneData, pokemonTwoData)}</div>
+        ) : pokemonOneData && pokemonTwoData && (
+          <div className="battle-container">
+            <div className="pokemon-column"><PokemonCard data={pokemonOneData} /></div>
+            <div className="vs-divider">
+              {battleResult && (
+                <div className="battle-result">
+                  <h3>Result</h3>
+                  <p>{battleResult}</p>
+                </div>
+              )}
+              <h3>Base Stats</h3>
+              <div className="stats-comparison">{renderComparisonStats(pokemonOneData, pokemonTwoData)}</div>
+            </div>
+            <div className="pokemon-column"><PokemonCard data={pokemonTwoData} /></div>
           </div>
-          <div className="pokemon-column"><PokemonCard data={pokemonTwoData} /></div>
-        </div>
-      )}
+        )}
     </main>
   );
 }

@@ -36,6 +36,42 @@ p {
   margin-bottom: 2rem;
 }
 
+/* --- Add these new styles for the Autocomplete feature --- */
+
+.autocomplete-container {
+  position: relative; /* This is crucial for positioning the suggestions list */
+}
+
+.compare-form input {
+  width: 100%; /* Ensure input takes full width of its container */
+}
+
+.suggestions-list {
+  position: absolute;
+  top: 100%; /* Position it right below the input field */
+  left: 0;
+  right: 0;
+  background-color: #161B22;
+  border: 1px solid #30363D;
+  border-top: none; /* Remove the top border to merge with the input */
+  border-radius: 0 0 6px 6px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  z-index: 10; /* Ensure it appears above other content */
+}
+
+.suggestions-list li {
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+  text-align: left;
+  text-transform: capitalize;
+}
+
+.suggestions-list li:hover {
+  background-color: #30363D;
+}
+
 .compare-form input {
   padding: 0.75rem 1rem;
   background-color: #161B22;
