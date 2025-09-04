@@ -101,6 +101,56 @@ p {
     color: white;
 }
 
+/* --- Add these new styles to your globals.css file --- */
+
+.battle-result {
+  margin-bottom: 2rem;
+  padding: 1rem;
+  background-color: #238636; /* Use the winning green color */
+  border: 1px solid #2ea043;
+  border-radius: 8px;
+  color: white;
+  animation: pop-in 0.5s ease-out;
+}
+
+.battle-result h3 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  opacity: 0.8;
+  color: white !important; /* Ensure it overrides other h3 styles */
+}
+
+.battle-result p {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: white !important; /* Ensure it overrides other p styles */
+  text-transform: capitalize;
+}
+
+/* A simple animation for the result box */
+@keyframes pop-in {
+  from { opacity: 0; transform: scale(0.8); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+/* --- You can also add this animation rule at the bottom of the file if it's not already there --- */
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* --- Ensure you update the existing .vs-divider section to look like this --- */
+.vs-divider {
+  min-width: 120px;
+  width: 20%;
+  padding-top: 0; /* Changed to 0 so the result box sits at the top */
+  font-weight: 600;
+  color: #8b949e;
+}
+
 .pokemon-card {
   background-color: #161B22;
   border: 1px solid #30363D;

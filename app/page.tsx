@@ -35,6 +35,7 @@ export default function HomePage() {
   const [pokemonTwoData, setPokemonTwoData] = useState<PokemonData | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [battleResult, setBattleResult] = useState<string | null>(null); // New state for the score
 
   const handleCompare = async (e: FormEvent) => {
     e.preventDefault();
@@ -47,6 +48,7 @@ export default function HomePage() {
     setPokemonOneData(null);
     setPokemonTwoData(null);
     setError(null);
+    setBattleResult(null); // Reset the result on new comparison
 
     try {
       const responses = await Promise.all([
@@ -57,8 +59,32 @@ export default function HomePage() {
         if (!res.ok) throw new Error(`Could not find one of the Pokémon. Please check the names.`);
         return res.json();
       }));
+
       setPokemonOneData(data[0]);
       setPokemonTwoData(data[1]);
+
+      // --- BATTLE SCORE LOGIC ---
+      let score1 = 0;
+      let score2 = 0;
+      data[0].stats.forEach((stat: { base_stat: number }, index: number) => {
+        if (stat.base_stat > data[1].stats[index].base_stat) {
+          score1++;
+        } else if (data[1].stats[index].base_stat > stat.base_stat) {
+          score2++;
+        }
+      });
+
+      let resultText = '';
+      if (score1 > score2) {
+        resultText = `${data[0].name} wins ${score1} - ${score2}!`;
+      } else if (score2 > score1) {
+        resultText = `${data[1].name} wins ${score2} - ${score1}!`;
+      } else {
+        resultText = `It's a draw ${score1} - ${score1}!`;
+      }
+      setBattleResult(resultText);
+      // --- END OF LOGIC ---
+
     } catch (err) {
       if (err instanceof Error) {
         setError(err.message);
@@ -71,6 +97,7 @@ export default function HomePage() {
   };
 
   const renderComparisonStats = (p1: PokemonData, p2: PokemonData) => {
+    // ... (rest of this function is unchanged)
     return p1.stats.map((stat, index) => {
       const p1Stat = stat.base_stat;
       const p2Stat = p2.stats[index].base_stat;
@@ -98,22 +125,21 @@ export default function HomePage() {
           <input type="text" value={pokemonTwoName} onChange={(e) => setPokemonTwoName(e.target.value)} placeholder="e.g., Blastoise"/>
           <button type="submit" disabled={isLoading}>{isLoading ? 'Comparing...' : 'Compare!'}</button>
         </form>
-
-        {/* --- ADD THE TIP BUTTON HERE --- */}
-        <a 
-          href="https://buy.stripe.com/00wbJ0bbc4YP6zDfpkgYU00" 
-          target="_blank" 
-          rel="noopener noreferrer" 
-          className="tip-button"
-        >
+        <a href="https://buy.stripe.com/00wbJ0bbc4YP6zDfpkgYU00" target="_blank" rel="noopener noreferrer" className="tip-button">
           If you like this, please leave a tip 💖
         </a>
-        
         {error && <p className="error-message" style={{marginTop: '2rem'}}>{error}</p>}
         {pokemonOneData && pokemonTwoData && (
           <div className="battle-container">
             <div className="pokemon-column"><PokemonCard data={pokemonOneData} /></div>
             <div className="vs-divider">
+              {/* --- BATTLE RESULT DISPLAY --- */}
+              {battleResult && (
+                <div className="battle-result">
+                  <h3>Result</h3>
+                  <p>{battleResult}</p>
+                </div>
+              )}
               <h3>Base Stats</h3>
               <div className="stats-comparison">{renderComparisonStats(pokemonOneData, pokemonTwoData)}</div>
             </div>
@@ -123,3 +149,4 @@ export default function HomePage() {
     </main>
   );
 }
+
